@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <style>
+        body, html {
+            font-family: "Lucida Grande";
+        }
+        li, ol, ul {
+            padding: 0;
+        }
+        li {
+            list-style-type: none;
+            border-top: 1px solid black;
+        }
+        .attrs {
+            float: right;
+            width: 30%;
+            background-color: rgba(30, 60, 30, 0.1)
+        }
+        .node {
+            float: left;
+            width: 70%;
+            background-color: rgba(60, 30, 30, 0.1);
+        }
+        .clear {
+            clear: both;
+        }
+
+    </style>
+</head>
+<body>
+    <ul class="attrs">
+        {% for (key, value) in document.attrs.items() %}
+            {% if (key == "thumb" or key == "art") %}
+            <li>{{ key }} <img width=128px src="{{ value }}"></li>
+            {% else %}
+            <li>{{ key }} {{ value }}</li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+
+    <ol class="node">
+    {% for child in document.children recursive %}
+        <li>{% if child.attrs.title %}
+                <a href="{{ child.attrs.key }}/">{{ child.attrs.title }}</a>
+            {% elif child.attrs.key  %}
+                <a href="{{ child.attrs.key }}/">Open</a>
+            {% endif %}
+            {{ child.name }}
+            <ul class="attrs">
+            {% for (key, value) in child.attrs.items() %}
+                {% if (key == "thumb" or key == "art") %}
+                <li>{{ key }} <img width=128px src="{{ value }}"></li>
+                {% else %}
+                <li>{{ key }} {{ value }}</li>
+                {% endif %}
+            {% endfor %}
+            </ul>
+            {% if child.children %}
+                <ol class="node">
+                    {{ loop(child.children) }}
+                </ol>
+            {% endif %}
+            <div class="clear"></div>
+        </li>
+    {% endfor %}
+    </ol>
+
+</body>
+</html>
