@@ -11,7 +11,7 @@ def pretty_plex(url=''):
     plex = requests.get("http://127.0.0.1:32400/" + url)
 
     if 'text/xml' in plex.headers['content-type']:
-        document = xml4h.parse(plex.text).children[0] # Grab the MediaContainer
+        document = xml4h.parse(plex.text)
         return make_response(render_template('api.html', document=document), plex.status_code)
     else:
         return Response(plex.content, mimetype=plex.headers["content-type"])
