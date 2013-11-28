@@ -12,7 +12,7 @@ def format_seconds(total_seconds):
     return "%.2d:%.2d:%.2d" % (hours, minutes, seconds)
 
 
-def pretty_print(xml_node):
+def pretty_print(server, xml_node):
     links = ["key", "parentKey"]
     images = ["art", "thumb", "parentThumb", "banner"]
     durations = ["duration"]
@@ -22,9 +22,9 @@ def pretty_print(xml_node):
         link = info = None
         preview = False
         if key in links:
-            link = value
+            link = server + value
         elif key in images:
-            link = value
+            link = server + value
             preview = True
 
         if key in durations:
@@ -45,21 +45,22 @@ def pretty_print(xml_node):
         node_attributes = []
 
     attributes = [ make_attribute(key, value) for (key, value) in node_attributes]
-    children = [pretty_print(child) for child in xml_node.children()]
+    children = [pretty_print(server, child) for child in xml_node.children()]
 
     return { "name": name, "attributes": attributes, "children": children }
 
 
-@app.route('/')
-@app.route('/<path:url>')
+@app.route('/api/')
+@app.route('/api/<path:url>')
 def pretty_plex(url=''):
     plex = requests.get("http://127.0.0.1:32400/" + url)
+    server = "/api"
 
     if 'text/xml' in plex.headers['content-type']:
         document = xml4h.parse(plex.text.encode('utf-8'))
 
         # Parse document into pretty printed node and attributes
-        return make_response(render_template('api.html', document=pretty_print(document.children[0])), plex.status_code)
+        return make_response(render_template('api.html', document=pretty_print(server, document.children[0])), plex.status_code)
     else:
         return Response(plex.content, mimetype=plex.headers["content-type"])
 
