@@ -49,7 +49,7 @@
         #preview {
             background: #586e75;
             position: fixed;
-            opacity: 0.6;
+            opacity: 0.75;
             padding: 4px;
             margin: 0;
         }
@@ -60,40 +60,37 @@
     </style>
 </head>
 <body>
+
+    {% macro attributes(attrs) %}
+        <ul>
+        {% for attr in attrs %}
+            {% if attr.link %}
+            <li><span class="key">{{ attr.key }}</span>: <a {% if attr.preview %}class="preview"{% endif %} href="{{ attr.link }}/">{{ attr.value }}</a></li>
+            {% else %}
+            <li>
+                <span class="key">{{ attr.key }}</span>: <span class="value">{{ attr.value }}</span>
+                {% if attr.info %}<span class="info">{{ attr.info }}</span>{% endif %}
+            </li>
+            {% endif %}
+        {% endfor %}
+        </ul>
+    {% endmacro %}
+
+
     <h1></h1>
     <section id="preview">
         <img>
     </section>
     <h1>{{ document.name }}</h1>
     <section class="document">
-        <ul>
-            {% for attr in document.attributes %}
-                {% if (attr.key == "key" or attr.key == "parentKey") %}
-                <li><span class="key">{{ attr.key }}</span>: <a class="api" href="{{ attr.value }}/">{{ attr.value }}</a></li>
-                {% elif (attr.key == "thumb" or attr.key == "art" or attr.key == "parentThumb" or attr.key == "banner") %}
-                <li><span class="key">{{ attr.key }}</span>: <a class="image" href="{{ attr.value }}">{{ attr.value }}</a></li>
-                {% else %}
-                <li><span class="key">{{ attr.key }}</span>: <span class="value">{{ attr.value }}</span></li>
-                {% endif %}
-            {% endfor %}
-       </ul>
+        {{ attributes(document.attributes) }}
     </section>
     <section class="document">
-          <ol>
+        <ol>
         {% for child in document.children recursive %}
             <li>
                 <span class="node">{{ child.name }}</span> {
-                <ul>
-                {% for attr in child.attributes %}
-                    {% if (attr.key == "key" or attr.key == "parentKey") %}
-                    <li><span class="key">{{ attr.key }}</span>: <a class="api" href="{{ attr.value }}/">{{ attr.value }}</a></li>
-                    {% elif (attr.key == "thumb" or attr.key == "art" or attr.key == "parentThumb" or attr.key == "banner") %}
-                    <li><span class="key">{{ attr.key }}</span>: <a class="image" href="{{ attr.value }}">{{ attr.value }}</a></li>
-                    {% else %}
-                    <li><span class="key">{{ attr.key }}</span>: <span class="value">{{ attr.value }}</span></li>
-                    {% endif %}
-                {% endfor %}
-                </ul>
+                {{ attributes(child.attributes) }}
                 {% if child.children %}
                     <ol>
                         {{ loop(child.children) }}
@@ -108,8 +105,7 @@
 
 
     <script>
-        $("a.image").mouseover(function(e) {
-
+        $("a.preview").mouseover(function(e) {
             $("#preview img").attr({ src: this.href });
 
             $("#preview")
