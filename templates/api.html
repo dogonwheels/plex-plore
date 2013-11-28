@@ -65,7 +65,7 @@
         <ul>
         {% for attr in attrs %}
             {% if attr.link %}
-            <li><span class="key">{{ attr.key }}</span>: <a {% if attr.preview %}class="preview"{% endif %} href="{{ attr.link }}/">{{ attr.value }}</a></li>
+            <li><span class="key">{{ attr.key }}</span>: <a {% if attr.preview %}class="preview"{% endif %} href="{{ attr.link }}">{{ attr.value }}</a></li>
             {% else %}
             <li>
                 <span class="key">{{ attr.key }}</span>: <span class="value">{{ attr.value }}</span>
