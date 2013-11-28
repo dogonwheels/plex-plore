@@ -45,10 +45,24 @@
             color: #b58900;
         }
 
+        #preview {
+            background: #586e75;
+            position: fixed;
+            opacity: 0.6;
+            padding: 4px;
+            margin: 0;
+        }
+        #preview img {
+            width: 320px;
+        }
+
     </style>
 </head>
 <body>
     <h1>{{ document.children.0.attrs["title1"] }}</h1>
+    <section id="preview">
+        <img>
+    </section>
     <section id="document">
         <ol>
         {% for child in document.children recursive %}
@@ -58,7 +72,7 @@
                 {% for (key, value) in child.attrs.items() %}
                     {% if (key == "key" or key == "parentKey") %}
                     <li><span class="key">{{ key }}</span>: <a class="api" href="{{ value }}/">{{ value }}</a></li>
-                    {% elif (key == "thumb" or key == "art" or key == "parentThumb") %}
+                    {% elif (key == "thumb" or key == "art" or key == "parentThumb" or key == "banner") %}
                     <li><span class="key">{{ key }}</span>: <a class="image" href="{{ value }}">{{ value }}</a></li>
                     {% else %}
                     <li><span class="key">{{ key }}</span>: <span class="value">{{ value }}</span></li>
@@ -78,5 +92,23 @@
     </section>
 
 
+    <script>
+        $("a.image").mouseover(function(e) {
+
+            $("#preview img").attr({ src: this.href });
+
+            $("#preview")
+                    .css({ left: e.clientX + 10, top: e.clientY + 10})
+                    .show();
+
+            var linkElement = $(this);
+            linkElement.mouseleave(function() {
+                $("#preview").hide();
+                linkElement.unbind("mouseleave");
+            })
+        });
+
+        $("#preview").hide();
+    </script>
 </body>
 </html>
