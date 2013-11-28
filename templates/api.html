@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>{{ document.children.0.attrs["title1"] }}</title>
+    <title></title>
 
     <script src="{{ url_for('static', filename='jquery.js') }}"></script>
 
@@ -24,10 +24,11 @@
         section {
             background: #444;
             padding: 16px;
+            margin: 8px;
             color: #586e75;
         }
 
-        #document {
+        .document {
             font-family: "Consolas", "Monaco", monospace;
         }
 
@@ -59,23 +60,37 @@
     </style>
 </head>
 <body>
-    <h1>{{ document.children.0.attrs["title1"] }}</h1>
+    <h1></h1>
     <section id="preview">
         <img>
     </section>
-    <section id="document">
-        <ol>
+    <h1>{{ document.name }}</h1>
+    <section class="document">
+        <ul>
+            {% for attr in document.attributes %}
+                {% if (attr.key == "key" or attr.key == "parentKey") %}
+                <li><span class="key">{{ attr.key }}</span>: <a class="api" href="{{ attr.value }}/">{{ attr.value }}</a></li>
+                {% elif (attr.key == "thumb" or attr.key == "art" or attr.key == "parentThumb" or attr.key == "banner") %}
+                <li><span class="key">{{ attr.key }}</span>: <a class="image" href="{{ attr.value }}">{{ attr.value }}</a></li>
+                {% else %}
+                <li><span class="key">{{ attr.key }}</span>: <span class="value">{{ attr.value }}</span></li>
+                {% endif %}
+            {% endfor %}
+       </ul>
+    </section>
+    <section class="document">
+          <ol>
         {% for child in document.children recursive %}
             <li>
                 <span class="node">{{ child.name }}</span> {
                 <ul>
-                {% for (key, value) in child.attrs.items() %}
-                    {% if (key == "key" or key == "parentKey") %}
-                    <li><span class="key">{{ key }}</span>: <a class="api" href="{{ value }}/">{{ value }}</a></li>
-                    {% elif (key == "thumb" or key == "art" or key == "parentThumb" or key == "banner") %}
-                    <li><span class="key">{{ key }}</span>: <a class="image" href="{{ value }}">{{ value }}</a></li>
+                {% for attr in child.attributes %}
+                    {% if (attr.key == "key" or attr.key == "parentKey") %}
+                    <li><span class="key">{{ attr.key }}</span>: <a class="api" href="{{ attr.value }}/">{{ attr.value }}</a></li>
+                    {% elif (attr.key == "thumb" or attr.key == "art" or attr.key == "parentThumb" or attr.key == "banner") %}
+                    <li><span class="key">{{ attr.key }}</span>: <a class="image" href="{{ attr.value }}">{{ attr.value }}</a></li>
                     {% else %}
-                    <li><span class="key">{{ key }}</span>: <span class="value">{{ value }}</span></li>
+                    <li><span class="key">{{ attr.key }}</span>: <span class="value">{{ attr.value }}</span></li>
                     {% endif %}
                 {% endfor %}
                 </ul>
