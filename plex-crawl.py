@@ -1,4 +1,4 @@
-from flask import Flask, make_response, render_template, Response
+from flask import Flask, make_response, render_template, Response, redirect
 import requests
 import time
 import xml4h
@@ -53,6 +53,10 @@ def pretty_print(server, location, xml_node):
 
     return { "name": name, "attributes": attributes, "children": children }
 
+
+@app.route('/')
+def index():
+    return redirect('/api/')
 
 @app.route('/api/')
 @app.route('/api/<path:url>')
