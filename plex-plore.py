@@ -2,8 +2,10 @@ from flask import Flask, make_response, render_template, Response, redirect
 import requests
 import time
 import xml4h
+import argparse
 
 app = Flask(__name__)
+server_addr = ''
 
 def format_seconds(total_seconds):
     hours = int(total_seconds / (60 * 60))
@@ -61,7 +63,7 @@ def index():
 @app.route('/api/')
 @app.route('/api/<path:url>')
 def pretty_plex(url=''):
-    plex = requests.get("http://127.0.0.1:32400/" + url)
+    plex = requests.get("http://" + server_addr + "/" + url)
     server = "/api"
 
     if 'text/xml' in plex.headers['content-type']:
@@ -73,4 +75,21 @@ def pretty_plex(url=''):
         return Response(plex.content, mimetype=plex.headers["content-type"])
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    parser = argparse.ArgumentParser(description='Plex API broswser')
+
+    parser.add_argument('--port', metavar='PORT', type=int,
+                        default=5000,
+                        help='Port to run webserver, default to 5000')
+
+    parser.add_argument('--debug', action='store_true',
+                        help='Print stacktraces')
+
+    parser.add_argument('server', metavar='SERVER', nargs='?',
+                        default='127.0.0.1:32400',
+                        help='Plex Media Server address')
+
+    args = parser.parse_args()
+
+    server_addr = args.server
+
+    app.run(debug=args.debug, port=args.port)
